@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.models.Institution;
@@ -20,7 +21,7 @@ public class Institution {
 	@NotBlank private String username;
 	@NotBlank private String password;
 	@NotBlank @Email private String email;
-	
+
 	private List<Reservation> reservations;
 	
 	

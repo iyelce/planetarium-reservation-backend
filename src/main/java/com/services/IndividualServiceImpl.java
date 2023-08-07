@@ -27,16 +27,29 @@ public class IndividualServiceImpl implements IndividualService{
     @Autowired private ReservationRepo reservationRepo;
 	
 	public Individual createUser(IndividualRegisterPayload registerPayload) throws CustomException{
+		
+		Individual repoUser = userRepo.findByUsername(registerPayload.getUsername());
+
+        if (repoUser != null) {
+            throw new CustomException("Username already exists.");
+        }
+        
 		if(registerPayload.getIdNumber().length() != 11) {
 			throw new CustomException("ID number must be length 11.");
 		}
+		
 		
 		// Encode id number
 		BCryptPasswordEncoder idEncoder = new BCryptPasswordEncoder();
         String encryptedId = idEncoder.encode(registerPayload.getIdNumber());
         
+     // Encrypt the user's password before saving
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encryptedPassword = passwordEncoder.encode(registerPayload.getPassword());
+        
         Individual newUser = new Individual(registerPayload);
         newUser.setIdNumber(encryptedId);
+        newUser.setPassword(encryptedPassword);
         
         Individual createdUser = userRepo.insert(newUser);
         log.info("Registered User: " + createdUser.toString());
@@ -48,17 +61,10 @@ public class IndividualServiceImpl implements IndividualService{
 	
 	public Individual loginUser(IndividualLoginPayload loginPayload) throws CustomException {
 		
-		// Encrypt the input idNumber
-	    BCryptPasswordEncoder idEncoder = new BCryptPasswordEncoder();
-	    String encryptedIdNumber = idEncoder.encode(loginPayload.getIdNumber());
+		Individual loginedUser = userRepo.findByUsername(loginPayload.getUsername());
 
-	    log.info(encryptedIdNumber);
-		
-		
-		Individual loginedUser = userRepo.findByIdNumber(encryptedIdNumber);
-		if (loginedUser == null) {
-			log.info("ID YOKKKKKKKK");
-            throw new CustomException("ID number does not exist.");
+        if (loginedUser == null || !matchesPassword(loginPayload.getPassword(), loginedUser.getPassword())) {
+            throw new CustomException("Username or password is wrong");
         }
 		
 		log.info("Loginned Individual: " + loginedUser.toString());
@@ -77,6 +83,11 @@ public class IndividualServiceImpl implements IndividualService{
 	                .orElseThrow(() -> new CustomException("Profile not found"));
 	     return user.getReservations();
 	 }
+	 
+	 private boolean matchesPassword(String rawPassword, String encodedPassword) {
+	        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	        return passwordEncoder.matches(rawPassword, encodedPassword);
+	    }
 	
 	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

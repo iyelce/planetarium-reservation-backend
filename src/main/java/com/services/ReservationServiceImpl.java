@@ -28,7 +28,9 @@ import com.repo.ReservationRepo;
 import com.repo.InstitutionRepo;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -36,7 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
 	 private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
 	
 	 @Autowired
-	 private InstitutionRepo userRepository;
+	 private InstitutionRepo institutionRepo;
 	
 	 @Autowired
 	 private ReservationRepo reservationRepository;
@@ -135,17 +137,11 @@ public class ReservationServiceImpl implements ReservationService {
 	             true);
 
 	     log.info("INSTITUTION BULMA ERROR");
-	     Institution profile = userRepository.findById(profileId)
+	     Institution profile = institutionRepo.findById(profileId)
 	             .orElseThrow(() -> new CustomException("Profile not found"));
 	     log.info("BULDUUUUU");
 	     
-	     log.info("REZERVASYONA EKLEME ERROR");
-	     profile.getReservations().add(reservation);
-	     log.info("ERROR YOK");
-	     userRepository.save(profile);
 	     
-	     day.setDate(dateSinceEpoch);
-	     dayRepo.save(day);
 
 	     log.info("RESERV SAVELEME ERROR 1");
 	     Reservation savedReservation = reservationRepository.insert(reservation);
@@ -154,6 +150,24 @@ public class ReservationServiceImpl implements ReservationService {
 	     
 	     log.info("Saved Reservation: " + savedReservation.toString());
 
+	     reservation.setId(savedReservation.getId());
+	     
+	     log.info("REZERVASYONA EKLEME ERROR");
+	     profile.getReservations().add(reservation);
+	     log.info("ERROR YOK");
+	     
+	     
+	     institutionRepo.save(profile);
+	     log.info("user saveleme");
+	     
+	     
+	     day.setDate(dateSinceEpoch);
+	     log.info("date setleme");
+	     
+	     
+	     dayRepo.save(day);
+	     log.info("day saveleme");
+	     
 	     return savedReservation;
 	 }
 	 
@@ -237,12 +251,13 @@ public class ReservationServiceImpl implements ReservationService {
 	     
 	     Individual profile = individualRepo.findById(profileId)
 	             .orElseThrow(() -> new CustomException("Profile not found"));
-	     individualRepo.save(profile);
 	     
-	     profile.getReservations().add(reservation);
-
-	     day.setDate(dateSinceEpoch);
-	     dayRepo.save(day);
+	     for (Reservation reserv : profile.getReservations()) {
+	    	    log.info("Reservation: " + reserv.toString());
+	    	}
+	     log.info("noluyoooooooooooooooo");
+	     
+	     
 
 	     log.info("RESERV SAVELEME ERROR 1");
 	     Reservation savedReservation = reservationRepository.insert(reservation);
@@ -250,13 +265,23 @@ public class ReservationServiceImpl implements ReservationService {
 	     log.info("RESERV SAVELEME ERROR 2");
 	     
 	     log.info("Saved Reservation: " + savedReservation.toString());
+	     
+	     reservation.setId(savedReservation.getId());
+	     
+	     profile.getReservations().add(reservation);
+	     for (Reservation reserv : profile.getReservations()) {
+	    	    log.info("Reservation: " + reserv.toString());
+	    	}
+	     individualRepo.save(profile);
+	     day.setDate(dateSinceEpoch);
+	     dayRepo.save(day);
 
 	     return savedReservation;
 	 }
  
 		
 		@Override
-		public void deleteReservation(String reservationId) {
+		public void deleteReservation(String reservationId, String profileId) {
 		    // Find the reservation to be deleted
 			
 			log.info("RESERVASYON BULMA ERROR 1");
@@ -284,6 +309,43 @@ public class ReservationServiceImpl implements ReservationService {
 		    log.info(strLong);
 			 
 		    log.info("DATE BULMA ERROR 2");
+		    
+		    log.info(reservationToDelete.getId());
+		    
+		    
+		    Optional<Individual> userInd = individualRepo.findById(profileId);
+		    if(userInd.isPresent()) {
+		    	log.info("hello??????");
+		    	Individual ind = userInd.get();
+		    	List<Reservation> updatedReserv = ind.getReservations();
+				updatedReserv.remove(reservationToDelete);
+				ind.setReservations(updatedReserv);
+		    	individualRepo.save(ind);
+				
+		    	for(Reservation reserv: ind.getReservations()) {
+		    		if(reserv.getId() == reservationToDelete.getId()) {
+		    			log.info("VAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		    		}
+		    		log.info(reserv.getId());
+		    	}
+		    }
+		    
+		    Optional<Institution> userInst = institutionRepo.findById(profileId);
+		    if(userInst.isPresent()) {
+		    	log.info("hello??????");
+		    	Institution inst = userInst.get();
+		    	List<Reservation> updatedReserv = inst.getReservations();
+		    	updatedReserv.remove(reservationToDelete);
+		    	inst.setReservations(updatedReserv);
+		    	institutionRepo.save(inst);
+		    
+		    	for(Reservation reserv: inst.getReservations()) {
+		    		if(reserv.getId() == reservationToDelete.getId()) {
+		    			log.info("VAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		    		}
+		    		log.info(reserv.getId());
+		    	}
+		    }
 		    
 		    log.info("REPODA BUL ERROR 1");
 
@@ -317,10 +379,12 @@ public class ReservationServiceImpl implements ReservationService {
 		        throw new CustomException("Time slot not found for the reservation time.");
 		    }
 		
+		    
+		    
+
+		
 
 		}
-
-
  
  	@ResponseStatus(HttpStatus.BAD_REQUEST)
  	public class CustomException extends RuntimeException {

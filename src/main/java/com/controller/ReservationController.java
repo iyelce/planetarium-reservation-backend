@@ -104,9 +104,9 @@ public class ReservationController {
 		
 
 		// deletes the event with given id
-		@DeleteMapping("/delete/{reservationId}")
-	    public ResponseEntity<?> deleteReservation(@PathVariable String reservationId) {
-	        reservationService.deleteReservation(reservationId);
+		@DeleteMapping("/profile/{profileId}/reservation/{reservationId}")
+	    public ResponseEntity<?> deleteReservation(@PathVariable String reservationId, @PathVariable String profileId) {
+	        reservationService.deleteReservation(reservationId, profileId);
 	        log.info("reserv DELETED");
 	        return ResponseEntity.ok().body("Deleted");
 	    }
