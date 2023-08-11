@@ -70,6 +70,7 @@ public class AuthController {
 		
 		@PostMapping("/institution/login")
 		public ResponseEntity<?> loginInstitution(@RequestBody InstitutionLoginPayload loginUser) {
+			log.info("in the controller");
 			try {
 				Institution loginedUser = institutionService.loginUser(loginUser);
 				log.info("user LOGGED IN");

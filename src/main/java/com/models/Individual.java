@@ -2,9 +2,9 @@ package com.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.payload.IndividualRegisterPayload;
@@ -12,33 +12,61 @@ import com.payload.IndividualRegisterPayload;
 @Document(collection = "individuals")
 public class Individual {
 
-	@Id private String id;
-	
-	private String idNumber;
-	private String name;
-	private String surname;
-	private String birthday;
-	private String username;
-	private String password;
+    @Id private String id;
 
-	private List<Reservation> reservations;
+    private String idNumber;
+    private String name;
+    private String surname;
+    private long birthday;
+    private String username;
+    private String password;
+    
+    private List<Reservation> reservations;
 	
-
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 	
-	public String getUsername() {
-		return username;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Individual other = (Individual) obj;
+		return Objects.equals(id, other.id);
 	}
 
-	public void setUsername(String username) {
+	public Individual(IndividualRegisterPayload payload) {
+		this.name = payload.getName();
+		this.password = payload.getPassword();
+		this.surname = payload.getSurname();
+		this.username = payload.getUsername();
+	}
+	
+	
+	
+
+	public Individual(String idNumber, String name, String surname, long birthday, String username, String password) {
+		super();
+		this.idNumber = idNumber;
+		this.name = name;
+		this.surname = surname;
+		this.birthday = birthday;
 		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	
+	
+	
+	@Override
+	public String toString() {
+		return "Individual [idNumber=" + idNumber + ", name=" + name + ", surname=" + surname + ", birthday=" + birthday
+				+ ", username=" + username + ", password=" + password + "]";
 	}
 
 	// Default constructor
@@ -51,50 +79,6 @@ public class Individual {
         }
         return reservations;
     }
-	
-
-    
-	
-	public Individual(String idNumber, String name, String surname, String birthday, String username, String password,
-			List<Reservation> reservations) {
-		super();
-		this.idNumber = idNumber;
-		this.name = name;
-		this.surname = surname;
-		this.birthday = birthday;
-		this.username = username;
-		this.password = password;
-		this.reservations = reservations;
-	}
-
-	public Individual(String id, String idNumber, String name, String surname, String birthday, String username,
-			String password, List<Reservation> reservations) {
-		super();
-		this.id = id;
-		this.idNumber = idNumber;
-		this.name = name;
-		this.surname = surname;
-		this.birthday = birthday;
-		this.username = username;
-		this.password = password;
-		this.reservations = reservations;
-	}
-
-	public Individual(IndividualRegisterPayload payload) {
-
-		this.idNumber = payload.getIdNumber();
-		this.name = payload.getName();
-		this.surname = payload.getSurname();
-		this.birthday = payload.getBirthday();
-		this.username = payload.getUsername();
-		this.password = payload.getPassword();
-	}
-
-	@Override
-	public String toString() {
-		return "Individual [idNumber=" + idNumber + ", name=" + name + ", surname=" + surname + ", birthday=" + birthday
-				+ "]";
-	}
 
 	public String getId() {
 		return id;
@@ -128,21 +112,37 @@ public class Individual {
 		this.surname = surname;
 	}
 
-	public String getBirthday() {
+	public long getBirthday() {
 		return birthday;
 	}
 
-	public void setBirthday(String birthday) {
+	public void setBirthday(long birthday) {
 		this.birthday = birthday;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public void setReservations(List<Reservation> reservations) {
 		this.reservations = reservations;
 	}
 	
-	
-	
-	
+
+ 
+    	
 	
 	
 }

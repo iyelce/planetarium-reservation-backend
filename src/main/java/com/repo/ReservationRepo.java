@@ -9,7 +9,7 @@ import com.models.Reservation;
 
 @Repository
 public interface ReservationRepo extends MongoRepository<Reservation, String> {
-	
 
+	
 
 }

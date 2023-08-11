@@ -33,22 +33,13 @@ public class IndividualServiceImpl implements IndividualService{
         if (repoUser != null) {
             throw new CustomException("Username already exists.");
         }
-        
-		if(registerPayload.getIdNumber().length() != 11) {
-			throw new CustomException("ID number must be length 11.");
-		}
-		
-		
-		// Encode id number
-		BCryptPasswordEncoder idEncoder = new BCryptPasswordEncoder();
-        String encryptedId = idEncoder.encode(registerPayload.getIdNumber());
+
         
      // Encrypt the user's password before saving
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encryptedPassword = passwordEncoder.encode(registerPayload.getPassword());
         
         Individual newUser = new Individual(registerPayload);
-        newUser.setIdNumber(encryptedId);
         newUser.setPassword(encryptedPassword);
         
         Individual createdUser = userRepo.insert(newUser);
