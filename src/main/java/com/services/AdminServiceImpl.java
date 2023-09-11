@@ -51,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
 	 @Autowired
 	 private IndividualRepo individualRepo;
 	
-	private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(AdminServiceImpl.class);
 	
 	// create new admin
 	public Admin createAdmin(AdminPayload admin) throws CustomException {
@@ -69,7 +69,7 @@ public class AdminServiceImpl implements AdminService {
         Admin newAdmin = new Admin();
         newAdmin.setPassword(encryptedPassword);
         newAdmin.setUsername(admin.getUsername());
-        //newAdmin.setRole("ROLE_ADMIN");
+        newAdmin.setRole("ROLE_ADMIN");
         
         Admin createdAdmin = adminRepo.insert(newAdmin);
         log.info("Registered User: " + createdAdmin.toString());

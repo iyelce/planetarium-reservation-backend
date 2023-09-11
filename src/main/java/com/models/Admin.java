@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import jakarta.validation.constraints.NotBlank;
 /*
@@ -25,7 +27,7 @@ public class Admin //implements UserDetails
     private String username;
 	@NotBlank
     private String password;
-	//private GrantedAuthority authority;
+	private GrantedAuthority authority;
 	
 	
 		
@@ -46,17 +48,16 @@ public class Admin //implements UserDetails
 		return Objects.equals(id, other.id);
 	}
 	
-/*
+
 	// Set the role as authority
     public void setRole(String role) {
         this.authority = new SimpleGrantedAuthority(role);
     }
 
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(authority);
     }
-*/	
+	
 	public String getId() {
 		return id;
 	}

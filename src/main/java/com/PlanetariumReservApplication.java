@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "com.repo")
-@ComponentScan ({"com", "com.services"})
+@ComponentScan ({"com", "com.services", "com.config"})
 public class PlanetariumReservApplication {
 
 	public static void main(String[] args) {

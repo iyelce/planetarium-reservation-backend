@@ -21,7 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
 public class InstitutionServiceImpl implements InstitutionService {
 
-	private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(InstitutionServiceImpl.class);
     @Autowired private InstitutionRepo userRepo;
     @Autowired private ReservationRepo reservationRepo;
 
@@ -39,6 +39,9 @@ public class InstitutionServiceImpl implements InstitutionService {
 
         Institution newUser = new Institution(registerPayload);
         newUser.setPassword(encryptedPassword);
+        
+     // Set the user's authorities
+        newUser.setRole("ROLE_INSTITUTION");
 
         Institution createdUser = userRepo.insert(newUser);
         log.info("Registered User: " + createdUser.toString());

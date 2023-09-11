@@ -25,7 +25,7 @@ public class AdminInitializer implements ApplicationRunner {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String encryptedPassword = passwordEncoder.encode("password");
             admin.setPassword(encryptedPassword); // Replace with a secure password
-            //admin.setRole("ROLE_ADMIN");
+            admin.setRole("ROLE_ADMIN");
             adminRepository.save(admin);
         }
     }

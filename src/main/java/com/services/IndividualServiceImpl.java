@@ -1,11 +1,14 @@
 package com.services;
 
 import java.util.List;
-
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,11 +23,12 @@ import com.repo.ReservationRepo;
 import com.services.InstitutionServiceImpl.CustomException;
 
 @Service
-public class IndividualServiceImpl implements IndividualService{
+public class IndividualServiceImpl implements IndividualService {
 	
-	private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(IndividualServiceImpl.class);
     @Autowired private IndividualRepo userRepo;
     @Autowired private ReservationRepo reservationRepo;
+    
 	
 	public Individual createUser(IndividualRegisterPayload registerPayload) throws CustomException{
 		
@@ -42,6 +46,9 @@ public class IndividualServiceImpl implements IndividualService{
         Individual newUser = new Individual(registerPayload);
         newUser.setPassword(encryptedPassword);
         
+     // Set the user's authorities
+        newUser.setRole("ROLE_INDIVIDUAL");
+        
         Individual createdUser = userRepo.insert(newUser);
         log.info("Registered User: " + createdUser.toString());
 
@@ -50,18 +57,17 @@ public class IndividualServiceImpl implements IndividualService{
 		
 	}
 	
-	public Individual loginUser(IndividualLoginPayload loginPayload) throws CustomException {
-		
-		Individual loginedUser = userRepo.findByUsername(loginPayload.getUsername());
+	@Override
+    public Individual loginUser(IndividualLoginPayload loginPayload) throws CustomException {
+        Individual userDetails = userRepo.findByUsername(loginPayload.getUsername());
 
-        if (loginedUser == null || !matchesPassword(loginPayload.getPassword(), loginedUser.getPassword())) {
+        if (!matchesPassword(loginPayload.getPassword(), userDetails.getPassword())) {
             throw new CustomException("Username or password is wrong");
         }
-		
-		log.info("Loginned Individual: " + loginedUser.toString());
-        return loginedUser;
-		
-	}
+
+        log.info("Loginned Individual: " + userDetails.getUsername());
+        return userRepo.findByUsername(loginPayload.getUsername());
+    }
 	
 	
 	 public Individual getProfileById(String profileId) throws CustomException {

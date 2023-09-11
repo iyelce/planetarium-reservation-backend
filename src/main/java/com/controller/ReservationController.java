@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,7 @@ public class ReservationController {
 
 		
 		// create new reservation for the institution
+		@PreAuthorize("hasAuthority('ROLE_INSTITUTION')")
 		@PostMapping("/institution/{profileId}")
 	    public ResponseEntity<?> createInstitutionReservation(@RequestBody ReservationPayload reservationPayload, @PathVariable String profileId) {
 	        try {
@@ -60,6 +62,7 @@ public class ReservationController {
 	    }
 		
 		// create new reservation for the individual
+		@PreAuthorize("hasAuthority('ROLE_INDIVIDUAL')")
 		@PostMapping("/individual/{profileId}")
 	    public ResponseEntity<?> createIndividualReservation(@RequestBody ReservationPayload reservationPayload, @PathVariable String profileId) {
 	        try {
@@ -75,6 +78,7 @@ public class ReservationController {
 	    }
 		
 		// return the created reservations by the institution
+		@PreAuthorize("hasAuthority('ROLE_INSTITUTION')")
 		@GetMapping("/institution/created/{profileId}")
 	    public ResponseEntity<?> getInstitutionReservations(@PathVariable String profileId) {
 	        // Find the user by profileId
@@ -89,6 +93,7 @@ public class ReservationController {
 	    }
 		
 		// return the created reservations by the individual
+		@PreAuthorize("hasAuthority('ROLE_INDIVIDUAL')")
 		@GetMapping("/individual/created/{profileId}")
 	    public ResponseEntity<?> getIndividualReservations(@PathVariable String profileId) {
 	        // Find the user by profileId
@@ -104,6 +109,7 @@ public class ReservationController {
 		
 
 		// deletes the event with given id
+		@PreAuthorize("hasAuthority('ROLE_INDIVIDUAL') or hasAuthority('ROLE_INSTITUTION')")
 		@DeleteMapping("/profile/{profileId}/reservation/{reservationId}")
 	    public ResponseEntity<?> deleteReservation(@PathVariable String reservationId, @PathVariable String profileId) {
 	        reservationService.deleteReservation(reservationId, profileId);
