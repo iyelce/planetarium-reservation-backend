@@ -2,9 +2,7 @@ package com.models;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,11 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import jakarta.validation.constraints.NotBlank;
-/*
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-*/
+
 @Document(collection = "admins")
 public class Admin //implements UserDetails
 {
@@ -48,8 +42,6 @@ public class Admin //implements UserDetails
 		return Objects.equals(id, other.id);
 	}
 	
-
-	// Set the role as authority
     public void setRole(String role) {
         this.authority = new SimpleGrantedAuthority(role);
     }
@@ -97,28 +89,6 @@ public class Admin //implements UserDetails
 		return "Admin [id=" + id + ", username=" + username + ", password=" + password + "]";
 	}
 
-/*
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
-	
-	*/
 	
 	
 }

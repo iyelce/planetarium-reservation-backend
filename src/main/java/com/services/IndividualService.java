@@ -2,7 +2,6 @@ package com.services;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
 
 import com.models.Individual;
 import com.models.Reservation;

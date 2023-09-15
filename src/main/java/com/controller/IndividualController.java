@@ -1,3 +1,6 @@
+
+// birey kaydolduktan sonra islem yapmak isterse
+// ek bilgilerin alinmasi icin (frontend den gelecek endpoint)
 package com.controller;
 
 import java.time.LocalDate;
@@ -19,8 +22,6 @@ import com.repo.IndividualRepo;
 import com.services.IndividualService;
 
 
-// making a reservation -> id and birthday update coming from front-end
-
 @RestController
 @RequestMapping("/individual")
 public class IndividualController {
@@ -39,14 +40,14 @@ public class IndividualController {
             LocalDate birthday = request.getBirthday();
             long dateSinceEpoch = birthday.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
 
-           // Retrieve the individual using the profile ID
+           // bireyi cek db den
             Individual individual = individualService.getProfileById(profileId);
 
             if (individual == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Individual not found.");
             }
 
-            // Update the individual's profile
+            // profili ek bilgilerle update le
             individual.setIdNumber(idNumber);
             individual.setBirthday(dateSinceEpoch);
             individualRepo.save(individual);

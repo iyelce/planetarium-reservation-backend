@@ -3,8 +3,6 @@ package com.services;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.models.Reservation;
 import com.models.Institution;
 import com.payload.InstitutionLoginPayload;

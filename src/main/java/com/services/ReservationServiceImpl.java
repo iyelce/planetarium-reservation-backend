@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.models.Activity;
 import com.models.Day;
 import com.models.Individual;
 import com.models.Reservation;
@@ -53,11 +54,8 @@ public class ReservationServiceImpl implements ReservationService {
 	 private IndividualRepo individualRepo;
 	 
 	 
-	 
-	 //TODO: change later!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	 int defaultCapacityValue = 250; 
 	
-	 
+	 // kurum icin rezervasyon olustur
 	 @Override
 	 public Reservation createInstitutionReservation(ReservationPayload reservationPayload, String profileId) {
 		 int visitorCount = reservationPayload.getVisitorCount();
@@ -75,6 +73,10 @@ public class ReservationServiceImpl implements ReservationService {
 		 long timeSinceEpoch = reservationDateTime.toInstant().toEpochMilli();
 		 long dateSinceEpoch = reservationDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
 
+		 Activity activity = reservationPayload.getActivity();
+		 
+		 log.info("activity: " + activity);
+		 
 	     // Find or create the Day object for the requested date
 	     log.info("reservation's date: " + reservationDate.toString());
 
@@ -93,14 +95,21 @@ public class ReservationServiceImpl implements ReservationService {
 
 	     if (day == null) {
 	         // The Day object for the requested date doesn't exist, create it using the DayServiceImpl
-	         day = dayService.createDayFromReservation(reservationPayload, defaultCapacityValue);
+	         day = dayService.createDayFromReservation(reservationPayload);
 	         log.info("Saved Day: " + day.toString());
 	     } else {
 	         log.info("existing day: " + day.toString());
 	     }
 	     
-	     // Check if the requested time slot is available and has sufficient capacity
-	     TimeSlot timeSlot = day.getTimeSlotsAvailability().get(timeSinceEpoch);
+	     // pull the activity from day if requested activity already exists
+	     if(day.getActivities().contains(activity)) {
+	    	 log.info(" DAYDE ACTIVITY BULDU!!!!!!");
+	    	 activity = day.getActivities().get(day.getActivities().indexOf(activity));
+	    	 log.info(activity.toString());
+	    	 
+	     }
+	     
+	     TimeSlot timeSlot = activity.getTimeSlotsAvailability().get(timeSinceEpoch);
 	     log.info("Time slot: {}", timeSlot.toString());
 	     
 	     log.info("TIME SLOT NULL MUUU MUSAIT MIIIIII ERROR 1");
@@ -109,6 +118,14 @@ public class ReservationServiceImpl implements ReservationService {
 	     }
 	     
 	     log.info("TIME SLOT NULL MUUU MUSAIT MIIIIII ERROR 2");
+	     
+	     log.info("GET VISITOR COUNT ERRORRRRR 1");
+	     
+	     // Perform validation on the reservation data
+	     if (reservationPayload.getVisitorCount() <= 0) {
+	         throw new CustomException("Visitor count must be greater than 0.");
+	     }
+	     log.info("GET VISITOR COUNT ERRORRRRR 2");
 
 	     // check whether the requested number exceeds capacity
 	     if ((timeSlot.getCapacity() - visitorCount) < 0) {
@@ -121,20 +138,12 @@ public class ReservationServiceImpl implements ReservationService {
 	     
 	     timeSlot.setCapacity(remainingCapacity);
 
-	     
-	     log.info("GET VISITOR COUNT ERRORRRRR 1");
-	     
-	     // Perform validation on the reservation data
-	     if (reservationPayload.getVisitorCount() <= 0) {
-	         throw new CustomException("Visitor count must be greater than 0.");
-	     }
-	     log.info("GET VISITOR COUNT ERRORRRRR 2");
-	     
+	         
 	     // Convert ReservationPayload to Reservation entity
 	     Reservation reservation = new Reservation(
 	             reservationPayload.getVisitorCount(),
 	             timeSinceEpoch,
-	             true);
+	             true, activity);
 
 	     log.info("INSTITUTION BULMA ERROR");
 	     Institution profile = institutionRepo.findById(profileId)
@@ -164,6 +173,12 @@ public class ReservationServiceImpl implements ReservationService {
 	     day.setDate(dateSinceEpoch);
 	     log.info("date setleme");
 	     
+	     // setting or updating the activity of day
+	     if(day.getActivities().contains(activity)) {
+	    	 day.getActivities().set(day.getActivities().indexOf(activity), activity);
+	     } else {
+	    	 day.getActivities().add(activity);
+	     }
 	     
 	     dayRepo.save(day);
 	     log.info("day saveleme");
@@ -173,7 +188,7 @@ public class ReservationServiceImpl implements ReservationService {
 	     return savedReservation;
 	 }
 	 
-	 
+	 // birey icin rezervasyon olustur
 	 @Override
 	 public Reservation createIndividualReservation(ReservationPayload reservationPayload, String profileId) {
 		 int visitorCount = reservationPayload.getVisitorCount();
@@ -190,6 +205,9 @@ public class ReservationServiceImpl implements ReservationService {
 		 // Convert ZonedDateTime to milliseconds since the epoch (UTC)
 		 long timeSinceEpoch = reservationDateTime.toInstant().toEpochMilli();
 		 long dateSinceEpoch = reservationDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
+		 
+		 Activity activity = reservationPayload.getActivity();
+		 log.info("activity: " + activity.toString());
 
 	     // Find or create the Day object for the requested date
 	     log.info("reservation's date: " + reservationDate.toString());
@@ -209,14 +227,21 @@ public class ReservationServiceImpl implements ReservationService {
 
 	     if (day == null) {
 	         // The Day object for the requested date doesn't exist, create it using the DayServiceImpl
-	         day = dayService.createDayFromReservation(reservationPayload, defaultCapacityValue);
+	         day = dayService.createDayFromReservation(reservationPayload);
 	         log.info("Saved Day: " + day.toString());
 	     } else {
 	         log.info("existing day: " + day.toString());
 	     }
 	     
+	     // pull the activity from day if requested activity already exists
+	     if(day.getActivities().contains(activity)) {
+	    	 activity = day.getActivities().get(day.getActivities().indexOf(activity));
+	    	 
+	     }
+	     
+	     
 	     // Check if the requested time slot is available and has sufficient capacity
-	     TimeSlot timeSlot = day.getTimeSlotsAvailability().get(timeSinceEpoch);
+	     TimeSlot timeSlot = activity.getTimeSlotsAvailability().get(timeSinceEpoch);
 	     log.info("Time slot: {}", timeSlot.toString());
 	     
 	     log.info("TIME SLOT NULL MUUU MUSAIT MIIIIII ERROR 1");
@@ -249,7 +274,7 @@ public class ReservationServiceImpl implements ReservationService {
 	     Reservation reservation = new Reservation(
 	             reservationPayload.getVisitorCount(),
 	             timeSinceEpoch,
-	             true);
+	             true, activity);
 	     
 	     Individual profile = individualRepo.findById(profileId)
 	             .orElseThrow(() -> new CustomException("Profile not found"));
@@ -276,12 +301,20 @@ public class ReservationServiceImpl implements ReservationService {
 	    	}
 	     individualRepo.save(profile);
 	     day.setDate(dateSinceEpoch);
+	     
+	     // setting or updating the activity of day
+	     if(day.getActivities().contains(activity)) {
+	    	 day.getActivities().set(day.getActivities().indexOf(activity), activity);
+	     } else {
+	    	 day.getActivities().add(activity);
+	     }
+	     
 	     dayRepo.save(day);
 
 	     return savedReservation;
 	 }
  
-		
+		// rezervasyon silme
 		@Override
 		public void deleteReservation(String reservationId, String profileId) {
 		    // Find the reservation to be deleted
@@ -297,7 +330,6 @@ public class ReservationServiceImpl implements ReservationService {
 		    // Get the date of the reservation to update the corresponding Day object
 		    long reservationDate = reservationToDelete.getRequestDateTime();
 		    
-		    //long dateSinceEpoch = reservationDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
 		    
 		    Instant instant = Instant.ofEpochMilli(reservationDate);
 		    ZonedDateTime zonedDateTime = instant.atZone(ZoneOffset.UTC);
@@ -314,6 +346,7 @@ public class ReservationServiceImpl implements ReservationService {
 		    
 		    log.info(reservationToDelete.getId());
 		    
+		    Activity activity = reservationToDelete.getActivity();
 		    
 		    Optional<Individual> userInd = individualRepo.findById(profileId);
 		    if(userInd.isPresent()) {
@@ -365,13 +398,18 @@ public class ReservationServiceImpl implements ReservationService {
 		 // Update the capacity for the reservation time slot
 		    int freedCapacity = reservationToDelete.getVisitorCount();
 		    long reservationTime = reservationToDelete.getRequestDateTime();
-		    TimeSlot timeSlot = day.getTimeSlotsAvailability().get(reservationTime);
+		    TimeSlot timeSlot = activity.getTimeSlotsAvailability().get(reservationTime);
 		    log.info("KAPASITE UPDATE ERROR 2");
 		    if (timeSlot != null) {
 		        int currentCapacity = timeSlot.getCapacity();
-		        timeSlot.setCapacity(currentCapacity + freedCapacity);
-		        timeSlot.setAvailable(true);
+		        System.out.println(currentCapacity);
+		        activity.getTimeSlotsAvailability().get(reservationTime).setCapacity(currentCapacity + freedCapacity);
+		        activity.getTimeSlotsAvailability().get(reservationTime).setAvailable(true);
+		        System.out.println(timeSlot.getCapacity());
 
+		        day.getActivities().set(day.getActivities().indexOf(activity), activity);
+		        
+		        
 		        // Save the updated Day object back to MongoDB
 		        dayRepo.save(day);
 

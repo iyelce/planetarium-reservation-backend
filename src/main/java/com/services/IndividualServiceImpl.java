@@ -1,35 +1,29 @@
 package com.services;
 
 import java.util.List;
-import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.models.Individual;
-import com.models.Institution;
 import com.models.Reservation;
 import com.payload.IndividualLoginPayload;
 import com.payload.IndividualRegisterPayload;
 import com.repo.IndividualRepo;
-import com.repo.ReservationRepo;
-import com.services.InstitutionServiceImpl.CustomException;
 
 @Service
 public class IndividualServiceImpl implements IndividualService {
 	
 	private static final Logger log = LoggerFactory.getLogger(IndividualServiceImpl.class);
     @Autowired private IndividualRepo userRepo;
-    @Autowired private ReservationRepo reservationRepo;
     
 	
+    // birey olustur
+    @Override
 	public Individual createUser(IndividualRegisterPayload registerPayload) throws CustomException{
 		
 		Individual repoUser = userRepo.findByUsername(registerPayload.getUsername());
@@ -57,6 +51,7 @@ public class IndividualServiceImpl implements IndividualService {
 		
 	}
 	
+	// login birey
 	@Override
     public Individual loginUser(IndividualLoginPayload loginPayload) throws CustomException {
         Individual userDetails = userRepo.findByUsername(loginPayload.getUsername());

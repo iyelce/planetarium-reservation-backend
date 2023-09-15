@@ -1,14 +1,13 @@
+// default user details service i implement ediyor
+// guvenlik kontrollerinde kullanildi
 package com.services;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,7 +22,6 @@ import com.models.Institution;
 import com.repo.AdminRepo;
 import com.repo.IndividualRepo;
 import com.repo.InstitutionRepo;
-//import com.services.UserDetailsService;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

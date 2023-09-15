@@ -13,7 +13,6 @@ import com.models.Reservation;
 import com.models.Institution;
 import com.payload.InstitutionLoginPayload;
 import com.payload.InstitutionRegisterPayload;
-import com.repo.ReservationRepo;
 import com.repo.InstitutionRepo;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,8 +22,8 @@ public class InstitutionServiceImpl implements InstitutionService {
 
 	private static final Logger log = LoggerFactory.getLogger(InstitutionServiceImpl.class);
     @Autowired private InstitutionRepo userRepo;
-    @Autowired private ReservationRepo reservationRepo;
 
+    // kurum olustur
     @Override
     public Institution createUser(InstitutionRegisterPayload registerPayload) throws CustomException {
         Institution repoUser = userRepo.findByUsername(registerPayload.getUsername());

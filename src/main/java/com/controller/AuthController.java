@@ -1,7 +1,5 @@
 package com.controller;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,6 @@ import com.payload.InstitutionLoginPayload;
 import com.payload.InstitutionRegisterPayload;
 import com.services.IndividualService;
 import com.services.InstitutionService;
-//import com.services.UserDetailsService;
 
 @RestController
 @RequestMapping("/auth")
@@ -54,7 +51,8 @@ public class AuthController {
 	    
 	    @Autowired 
 	    private UserDetailsService userDetailService;
-	
+	    
+	    // kurum kaydol
 		@PostMapping("/institution/register")
 		public ResponseEntity<?> createInstitution(@RequestBody InstitutionRegisterPayload registerPayload) {
 			try {
@@ -66,6 +64,7 @@ public class AuthController {
 			}
 		}
 		
+		// birey kaydol
 		@PostMapping("/individual/register")
 		public ResponseEntity<?> createIndividual(@RequestBody IndividualRegisterPayload registerPayload) {
 			try {
@@ -78,11 +77,11 @@ public class AuthController {
 			}
 		}
 		
+		// birey login
 		@PostMapping("/individual/login")
 		public ResponseEntity<?> loginIndividual(@RequestBody IndividualLoginPayload loginUser) {
 			try {
 	            // Authenticate the individual user and generate a token
-	            //authenticateUser(loginUser.getUsername(), loginUser.getPassword(), "individual");
 				log.info("Auth    username: "+ loginUser.getUsername()+ "password: "+ loginUser.getPassword());
 				Authentication authentication =
 	                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
@@ -93,12 +92,13 @@ public class AuthController {
 	            String token = jwtTokenUtil.generateToken(userDetails);
 	            log.info(token);
 	            log.info("TOKEN OLUSTU");
-	            return ResponseEntity.ok(Map.of("token", token));
+	            return ResponseEntity.ok(token);
 	        } catch (AuthenticationException e) {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
 	        }
 	    }
 		
+		// kurum login
 		@PostMapping("/institution/login")
 		public ResponseEntity<?> loginInstitution(@RequestBody InstitutionLoginPayload loginUser) {
 			log.info("in the controller");
@@ -116,13 +116,13 @@ public class AuthController {
 	            String token = jwtTokenUtil.generateToken(userDetails);
 	            log.info(token);
 	            log.info("TOKEN OLUSTU");
-	            return ResponseEntity.ok(Map.of("token", token));
+	            return ResponseEntity.ok(token);
 	        } catch (AuthenticationException e) {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
 	        }
 		}
 		
-		// return desired profile
+		// kurum profili dondur
 		@PreAuthorize("hasAuthority('ROLE_INSTITUTION')")
 		@GetMapping("/institution/{profileId}")
 		public ResponseEntity<?> getInstProfileById(@PathVariable String profileId) {
@@ -132,11 +132,10 @@ public class AuthController {
 			log.info(user.getAuthorities().toString());
 						
 			log.info("institution RETURNED");
-			// user details olarak donduruyo, degistirilebilir
 			return ResponseEntity.ok(user);
 		}
 		
-		// return desired profile
+		// birey profili dondur
 		@PreAuthorize("hasAuthority('ROLE_INDIVIDUAL')")
 		@GetMapping("/individual/{profileId}")
 		public ResponseEntity<?> getIndProfileById(@PathVariable String profileId) {
@@ -146,7 +145,6 @@ public class AuthController {
 			UserDetails user = userDetailService.loadUserByUsername(ind.getUsername());
 			log.info("Individual RETURNED");
 			
-			// user details olarak donduruyo, degistirilebilir
 			return ResponseEntity.ok(user);
 		}
 

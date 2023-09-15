@@ -1,8 +1,9 @@
 package com.payload;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import com.models.Activity;
 
 public class ReservationPayload {
 
@@ -10,17 +11,28 @@ public class ReservationPayload {
     private LocalDate requestDate;
     private LocalTime requestTime;
     
+    private Activity activity;
+    
     
 	public ReservationPayload() {};	
     
-	public ReservationPayload(int visitorCount, LocalDate requestDate, LocalTime requestTime) {
+	public ReservationPayload(int visitorCount, LocalDate requestDate, LocalTime requestTime, Activity activity) {
 		super();
 		this.visitorCount = visitorCount;
 		this.requestDate = requestDate;
 		this.requestTime = requestTime;
+		this.activity = activity;
 	}
 
 
+	
+	public Activity getActivity() {
+		return activity;
+	}
+
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+	}
 
 	public int getVisitorCount() {
 		return visitorCount;
@@ -47,9 +59,10 @@ public class ReservationPayload {
 
 	@Override
 	public String toString() {
-		return "ReservationPayload [visitorCount=" + visitorCount + ", requestDate=" + requestDate + ", requestTime=" + requestTime + "]";
+		return "ReservationPayload [visitorCount=" + visitorCount + ", requestDate=" + requestDate + ", requestTime="
+				+ requestTime + ", activity=" + activity + "]";
 	}
-    
-    
+
+	  
     
 }

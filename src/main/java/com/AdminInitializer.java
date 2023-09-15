@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.repo.AdminRepo;
 import com.models.Admin;
 
+// Uygulama ilk defa çalistiginda default admin yarat
 @Component
 public class AdminInitializer implements ApplicationRunner {
 
@@ -17,14 +18,14 @@ public class AdminInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // Check if an admin already exists
+        // DB de admin var mı kontrol et
         if (adminRepository.findByUsername("admin") == null) {
-            // If not, create the initial admin
             Admin admin = new Admin();
             admin.setUsername("admin");
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            // TODO: güvenli sifre!!!!!!
             String encryptedPassword = passwordEncoder.encode("password");
-            admin.setPassword(encryptedPassword); // Replace with a secure password
+            admin.setPassword(encryptedPassword);
             admin.setRole("ROLE_ADMIN");
             adminRepository.save(admin);
         }

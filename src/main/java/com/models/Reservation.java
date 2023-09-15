@@ -1,12 +1,9 @@
 package com.models;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
@@ -17,6 +14,7 @@ public class Reservation {
 	private int visitorCount;
 	private long requestDateTime;
 
+	private Activity activity;
 
 	
 	private boolean approved;
@@ -42,6 +40,14 @@ public class Reservation {
 	
 	
 
+	public Activity getActivity() {
+		return activity;
+	}
+
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+	}
+
 	@Override
 	public String toString() {
 		return "Reservation [visiterCount=" + visitorCount + ", requestDate=" + requestDateTime + ", approved=" + approved
@@ -50,11 +56,12 @@ public class Reservation {
 
 	public Reservation() {};
 	
-	public Reservation(int visitorCount, long requestDateTime, boolean approved) {
+	public Reservation(int visitorCount, long requestDateTime, boolean approved, Activity activity) {
 		super();
 		this.visitorCount = visitorCount;
 		this.requestDateTime = requestDateTime;
 		this.approved = approved;
+		this.activity = activity;
 
 	}
 

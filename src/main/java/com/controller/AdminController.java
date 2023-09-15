@@ -26,14 +26,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.controller.AuthController.CustomException;
 import com.filter.JwtTokenUtil;
 import com.models.Admin;
+import com.models.Day;
 import com.models.Individual;
 import com.models.Institution;
 import com.models.Reservation;
+import com.payload.ActivityPayload;
 import com.payload.AdminPayload;
 import com.payload.InstitutionRegisterPayload;
 import com.repo.ReservationRepo;
 import com.services.AdminService;
-//import com.services.UserDetailsService;
+import com.services.DayService;
+
 
 @RestController
 @RequestMapping("/admin")
@@ -50,8 +53,10 @@ public class AdminController {
 	private UserDetailsService userDetailService;
 	@Autowired
     private JwtTokenUtil jwtTokenUtil;
+	@Autowired 
+	private DayService dayService;
 	
-	// add another admin
+	// baska admin ekle
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping("/add-admin")
     public ResponseEntity<?> createAdmin(@RequestBody AdminPayload payload) {
@@ -82,7 +87,7 @@ public class AdminController {
 	}
 
 	
-	// delete reservations
+	// rezervasyon sil
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/reservation/{reservationId}")
     public ResponseEntity<?> deleteReservation(@PathVariable String reservationId) {
@@ -91,7 +96,7 @@ public class AdminController {
         return ResponseEntity.ok().body("Deleted");
     }
 
-    // return admin profile
+    // admin profil dondur
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/profile/{profileId}")
     public ResponseEntity<?> getAdminProfileById(@PathVariable String profileId) {
@@ -101,7 +106,7 @@ public class AdminController {
     }
 
 	
-    // return all the reservations
+    // tum rezervasyonlari dondur
 	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/all-reservations")
     public ResponseEntity<?> getAllReservations() {
@@ -110,5 +115,17 @@ public class AdminController {
         return ResponseEntity.ok(reservations);
     }
 	
+	// aktivite ekle
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+	@PostMapping("/add-activity")
+	public ResponseEntity<?> addActivity(@RequestBody ActivityPayload activity){
+		log.info("controller icindeyizzzzzzzzzz");
+		System.out.println(activity.getSlotDuration());
+		Day day = dayService.createDayFromActivity(activity);
+		log.info("added activity: " + activity.toString());
+		return ResponseEntity.ok(day);
+	}
+	
+
 	
 }

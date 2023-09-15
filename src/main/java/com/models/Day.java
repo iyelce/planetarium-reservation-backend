@@ -1,10 +1,6 @@
 package com.models;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Map;
-
+import java.util.ArrayList;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,22 +9,30 @@ public class Day {
 	@Id private String id;
 	
 	private long date; // Store date in UTC
-    private Map<Long, TimeSlot> timeSlotsAvailability;
-    
+    private ArrayList<Activity> activities;
+	
+	
     public Day() {};
     
-    public Day(String id, long date, Map<Long, TimeSlot> timeSlotsAvailability ) {
+    public Day(String id, long date, ArrayList<Activity> activity) {
 		super();
 		this.id= id;
 		this.date = date;
-		this.timeSlotsAvailability = timeSlotsAvailability;
+		this.activities = activity;
 	}
     
 
-	public Day(long date, Map<Long, TimeSlot> timeSlotsAvailability) {
+	public ArrayList<Activity> getActivities() {
+		return activities;
+	}
+
+	public void setActivities(ArrayList<Activity> activities) {
+		this.activities = activities;
+	}
+
+	public Day(long date) {
 		super();
 		this.date = date;
-		this.timeSlotsAvailability = timeSlotsAvailability;
 	}
 
 	public long getDate() {
@@ -37,7 +41,7 @@ public class Day {
 
 	@Override
 	public String toString() {
-		return "Day [date=" + date + ", timeSlotsAvailability=" + timeSlotsAvailability + "]";
+		return "Day [date=" + date + "]";
 	}
 
 
@@ -53,15 +57,7 @@ public class Day {
 		this.date = date;
 	}
 
-	public Map<Long, TimeSlot> getTimeSlotsAvailability() {
-		return timeSlotsAvailability;
-	}
 
-	public void setTimeSlotsAvailability(Map<Long, TimeSlot> timeSlotsAvailability) {
-		this.timeSlotsAvailability = timeSlotsAvailability;
-	}
-
-	
 
     
 }
