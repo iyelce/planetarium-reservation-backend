@@ -43,7 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 				
 				log.info("request:  "+ request.getRequestURL());
 			
-				// request login request ise token validate etme
+				// login request ise token validate etme
 				if (isLoginRequest(request)) {
 					
 					filterChain.doFilter(request, response);

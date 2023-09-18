@@ -132,7 +132,7 @@ public class AuthController {
 			log.info(user.getAuthorities().toString());
 						
 			log.info("institution RETURNED");
-			return ResponseEntity.ok(user);
+			return ResponseEntity.ok(inst);
 		}
 		
 		// birey profili dondur
@@ -141,11 +141,11 @@ public class AuthController {
 		public ResponseEntity<?> getIndProfileById(@PathVariable String profileId) {
 			
 			Individual ind = individualService.getProfileById(profileId);
-			//authenticateUser(user.getUsername(), user.getPassword(), "individual");
 			UserDetails user = userDetailService.loadUserByUsername(ind.getUsername());
+			log.info(user.getAuthorities().toString());
 			log.info("Individual RETURNED");
 			
-			return ResponseEntity.ok(user);
+			return ResponseEntity.ok(ind);
 		}
 
 		
